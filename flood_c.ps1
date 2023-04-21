@@ -65,9 +65,9 @@ Function Get-FreeSpace {
 # Randomize the file names and file extensions by combining parts from three arrays and a file extension.
 Function Set-FileNames() {
     $FileName01 = @('Windows', 'Microsoft', 'WMI')
-    $FileName02 = @('Client', 'Server', 'Console', 'Desktop', 'Local', 'Service', 'System')
-    $FileName03 = @('Host', 'Network', 'Firewall', 'Diagnostic', 'Policy', 'Agent', 'Antivirus', 'Application', 'Manager', 'Runtime', 'Driver', 'Session', 'Container', 'Process', 'Framework', 'Extension')
-    $FileExtension = @('.log', '.exe', '.ini', '.dll', '.dat', '.xml', '.txt')
+    $FileName02 = @('Client', 'Server', 'Console', 'Desktop', 'Local', 'Service', 'System', 'Workstation')
+    $FileName03 = @('Host', 'Network', 'Firewall', 'Diagnostic', 'Policy', 'Agent', 'Antivirus', 'Application', 'Manager', 'Runtime', 'Driver', 'Session', 'Container', 'Process', 'Framework', 'Extension', 'Policy')
+    $FileExtension = @('.log', '.exe', '.ini', '.dll', '.dat', '.xml', '.txt', '.msi', '.bat', '.zip', '.tar', '.bmp')
 
     $allFileNames = @()
 
@@ -91,7 +91,7 @@ Function Set-FileNames() {
 # STEP 4
 # Create files of random sizes that equal the remaining space.
 Function Get-RandomFileSize {
-    $RandomFileSize = Get-Random -Min 1000 -Max 5000
+    $RandomFileSize = Get-Random -Min 1000 -Max 50000
     $FileSize = $RandomFileSize * 1kb
     return $FileSize
 }
