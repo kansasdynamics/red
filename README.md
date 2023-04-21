@@ -31,7 +31,7 @@ sudo chmod +x footprint.sh
 ./footprint.sh
 ``` 
 
-### *Flood C:\*  
+### *Flood C:*  
 Floods the C:\ drive on a Windows computer with randomly generated files dispersed in random directories until there is no more available space.
 
 ```
