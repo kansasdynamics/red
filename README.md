@@ -17,7 +17,7 @@ Create a directory structure for a forensics project and run initial Nmap and Go
 
 ```
 sudo chmod +x nmap.sh  
-./nmap.sh
+./nmap_prompts.sh
 ```  
 *Nmap Sample Output*  
 
@@ -28,7 +28,7 @@ Enumerate a target website to generate a footprint report.
 
 ```
 sudo chmod +x footprint.sh  
-./footprint.sh
+./footprint_report.sh
 ``` 
 
 ### *Flood C:*  
@@ -37,3 +37,14 @@ Floods the C:\ drive on a Windows computer with randomly generated files dispers
 ```
 .\flood_c.ps1
 ``` 
+
+### *Office Password*  
+Runs the office2john.py script against password protected Microsoft Office documents to attempt to crack the hash and reveal the password.
+
+```
+sudo chmod +x office_password.sh  
+./office_password.sh
+``` 
+*Office Password Sample Output*  
+
+![Office Password Sample Output](https://user-images.githubusercontent.com/89443340/194686187-f68290f4-57fa-4a9f-8dda-67f1edd3ee20.png "Init Project Sample Output")
