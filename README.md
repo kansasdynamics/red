@@ -16,7 +16,7 @@ sudo chmod +x init_project.sh
 Create a directory structure for a forensics project and run initial Nmap and Gobuster scans on the target based on input from prompts.
 
 ```
-sudo chmod +x nmap.sh  
+sudo chmod +x nmap_prompts.sh  
 ./nmap_prompts.sh
 ```  
 *Nmap Sample Output*  
@@ -27,7 +27,7 @@ sudo chmod +x nmap.sh
 Enumerate a target website to generate a footprint report.
 
 ```
-sudo chmod +x footprint.sh  
+sudo chmod +x footprint_report.sh  
 ./footprint_report.sh
 ``` 
 
@@ -53,5 +53,6 @@ sudo chmod +x office_password.sh
 This script runs theHarvester against many sources automatically for information gathering.
 
 ```
+sudo chmod +x auto_harvest.sh  
 ./auto_harvest.sh
 ``` 
