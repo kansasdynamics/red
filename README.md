@@ -66,4 +66,4 @@ sudo chmod +x gobuster_directories.sh
 ``` 
 *gobuster Directories Sample Output*  
 
-![Office Password Sample Output](https://user-images.githubusercontent.com/89443340/236116076-9168d1e2-95f4-44af-8b62-6dabbf4082ea.png "Init Project Sample Output")
+![gobuster Directories Sample Output](https://github.com/kansasdynamics/red/assets/89443340/db7326a7-d7b6-427b-807a-bae5d45d298b.png "gobuster Directories Sample Output")
