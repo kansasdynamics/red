@@ -56,3 +56,14 @@ This script runs theHarvester against many sources automatically for information
 sudo chmod +x auto_harvest.sh  
 ./auto_harvest.sh
 ``` 
+
+### *gobuster Directories*  
+Runs gobuster directory enumeration with additional user-friendly inputs.
+
+```
+sudo chmod +x gobuster_directories.sh  
+./gobuster_directories.sh 
+``` 
+*gobuster Directories Sample Output*  
+
+![Office Password Sample Output](https://user-images.githubusercontent.com/89443340/236116076-9168d1e2-95f4-44af-8b62-6dabbf4082ea.png "Init Project Sample Output")
