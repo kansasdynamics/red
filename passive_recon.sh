@@ -2,7 +2,7 @@
 
 # This script will run many tools simultaneously to perform passive recon on a target.
 
-# Tools to install, wafw00f, sublist3r,
+# Tools to install, wafw00f, sublist3r, theHarvester
 if [ $(dpkg-query -W -f='${Status}' wafw00f 2>/dev/null | grep -c "ok installed") -eq 0 ];
 then
   echo "The required packages are not installed. Installing required packages now."
