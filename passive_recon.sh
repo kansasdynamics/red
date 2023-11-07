@@ -10,3 +10,7 @@ then
   apt install gobuster -y
   echo "Required packages have successfully been installed."
 fi
+
+# Tools to use for output
+# host, curl robots.txt, whatweb, whois, dnsrecon -d, wafw00f, theHarvester -d domain.com -b source, 
+# Target is not using FQDN, just domain.com
