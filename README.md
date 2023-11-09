@@ -12,12 +12,12 @@ sudo chmod +x init_project.sh
 
 ![Init Project Sample Output](https://user-images.githubusercontent.com/89443340/194686187-f68290f4-57fa-4a9f-8dda-67f1edd3ee20.png "Init Project Sample Output")
 
-### *Nmap Prompts*  
+### *Nmap Helper*  
 Create a directory structure for a forensics project and run initial Nmap and Gobuster scans on the target based on input from prompts.
 
 ```
-sudo chmod +x nmap_prompts.sh  
-./nmap_prompts.sh
+sudo chmod +x nmap_helper.sh  
+./nmap_helper.sh
 ```  
 *Nmap Sample Output*  
 
