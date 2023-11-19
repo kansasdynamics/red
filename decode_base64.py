@@ -1,3 +1,4 @@
+# Simple python script for decoding a Base64 encoded string or password
 import base64
 import sys
 
