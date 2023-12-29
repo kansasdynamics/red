@@ -1,102 +1,70 @@
 #!/bin/bash
 
-# This script provides a user-friendly interface for using gobuster on website directories. 
-# This script assumes you are using Kali Linux with the following wordlists available:
-# /usr/share/wordlists/dirbuster/
+# Check if the file argument is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <filename>"
+  exit 1
+fi
 
-# Check to see if gobuster is installed
-# If not installed, then install
-if [ $(dpkg-query -W -f='${Status}' gobuster 2>/dev/null | grep -c "ok installed") -eq 0 ];
+# Generate a timestamp
+timestamp=$(date +"%Y%m%d_%H%M%S")
+
+# Check to see if the following tools are installed.
+# If not, then install the tools
+# apt install libimage-exiftool-perl steghide file hexdump
+if [ $(dpkg-query -W -f='${Status}' libimage-exiftool-perl steghide file hexdump 2>/dev/null | grep -c "ok installed") -eq 0 ];
 then
-  echo "The required packages are not installed. Installing required packages now."
-  nmap;
-  apt install gobuster -y
-  echo "Required packages have successfully been installed."
+  apt-get install libimage-exiftool-perl steghide file hexdump;
 fi
 
-# Print introductory text
-printf "This script provides a user-friendly interface for using gobuster on website directories.\n"
-printf "It is designed for use on Kali Linux and assumes the following wordlists are available:\n"
-printf "/usr/share/wordlists/dirbuster/\n"
-printf "\n"
-printf "Please follow the prompts to begin enumerating.\n"
-printf "\n"
+# Extract the base filename without extension
+base_filename=$(basename "$1" | cut -d. -f1)
 
-# Collect user inputs
-read -p "Enter Target Host (e.g., http://127.0.0.1): " TARGETHOST
-read -p "Enter Website Port (e.g., 80, 443, 8080): " TARGETPORT
-TARGETURL="${TARGETHOST}:${TARGETPORT}"
-read -p "Output results to file? (Y/N): " OUTPUT
-OUTPUT=${OUTPUT^^}
+# Creating the analysis and strings file names
+analysis_file="${base_filename}_${timestamp}_Analysis.log"
+strings_file="${base_filename}_${timestamp}_Strings.txt"
 
-# Print WordList Options
-echo "WordList Options:"
-printf "\n"
-# Define the list header
-printf "%-4s %-60s\n" "#" "List"
-printf "%-4s %-60s\n" "---" "----"
+# Creating the analysis file
+touch "$analysis_file"
+echo "### File Name ###" >> "$analysis_file"
+echo '-----------------' >> "$analysis_file"
+echo $1 >> "$analysis_file"
+echo >> "$analysis_file"
 
-# Define the list options
-printf "%-4d %-60s\n" 0 "Apache User Enum 1.0"
-printf "%-4d %-60s\n" 1 "Apache User Enum 2.0"
-printf "%-4d %-60s\n" 2 "Directories - jbrofuzz"
-printf "%-4d %-60s\n" 3 "Directory List 1.0 Medium"
-printf "%-4d %-60s\n" 4 "Directory List 2.3 Small"
-printf "%-4d %-60s\n" 5 "Directory List 2.3 Medium"
-printf "%-4d %-60s\n" 6 "Directory List 2.3 Small (lowercase)"
-printf "%-4d %-60s\n" 7 "Directory List 2.3 Medium (lowercase)"
-printf "\n"
+# Hash
+shm_id=$(sha256sum  $1 | awk '{print $1}')
+echo "### SHA256 File Hash ###" >> "$analysis_file"
+echo '-------------------------' >> "$analysis_file"
+echo $shm_id >> "$analysis_file"
+echo >> "$analysis_file"
 
-# Prompt user for input on WordList
-read -p "Select a WordList (0-7): " WORDLIST
+# VirusTotal
+echo "### VirusTotal ###" >> "$analysis_file"
+echo '------------------' >> "$analysis_file"
+echo '[VirusTotal] https://www.virustotal.com/gui/file/'$shm_id'' >> "$analysis_file"
+echo >> "$analysis_file"
 
-# Path to directory containing files
-DIR_PATH="/usr/share/wordlists/dirbuster"
+# Hexdump
+echo "### Hexdump ###" >> "$analysis_file"
+echo '----------------' >> "$analysis_file"
+hexdump -C -n 100 $1 >> "$analysis_file"
+echo >> "$analysis_file"
 
-# Choose file based on user input
-case $WORDLIST in
-    0)
-        SELECTED_WORDLIST="$DIR_PATH/apache-user-enum-1.0.txt"
-        ;;
-    1)
-        SELECTED_WORDLIST="$DIR_PATH/apache-user-enum-2.0.txt"
-        ;;
-    2)
-        SELECTED_WORDLIST="$DIR_PATH/directories.jbrofuzz"
-        ;;
-    3)
-        SELECTED_WORDLIST="$DIR_PATH/directory-list-1.0.txt"
-        ;;
-    4)
-        SELECTED_WORDLIST="$DIR_PATH/directory-list-2.3-small.txt"
-        ;;
-    5)
-        SELECTED_WORDLIST="$DIR_PATH/directory-list-2.3-medium.txt"
-        ;;
-    6)
-        SELECTED_WORDLIST="$DIR_PATH/directory-list-lowercase-2.3-small.txt"
-        ;;
-    7)
-        SELECTED_WORDLIST="$DIR_PATH/directory-list-lowercase-2.3-medium.txt"
-        ;;
-    *)
-        echo "Invalid option selected."
-        exit 1
-        ;;
-esac
+# File
+echo "### File Type ###" >> "$analysis_file"
+echo '-----------------' >> "$analysis_file"
+file -i $1 >> "$analysis_file"
+echo >> "$analysis_file"
 
-# Showing the filename the user selected
-echo "Using file: $SELECTED_WORDLIST"
-printf "\n"
+# Exiftool
+echo "### Exiftool ###" >> "$analysis_file"
+echo '----------------' >> "$analysis_file"
+exiftool $1 >> "$analysis_file"
+echo >> "$analysis_file"
 
-if [ "$OUTPUT" == "Y" ]; then
-    # Create timestamp and filename structure
-    TIMESTAMP=`date +"%m-%d-%Y_%T"`
-    FILENAME=${TARGETHOST}_gobuster_results_${TIMESTAMP}.log
-    
-    # Run gobuster with output to file
-    gobuster dir -u "$TARGETURL" -o "$FILENAME" -w "$SELECTED_WORDLIST"
-else
-    # Run gobuster without output to file
-    gobuster dir -u "$TARGETURL" -w "$SELECTED_WORDLIST"
-fi
+# Strings
+echo "### Strings Output ###" >> "$analysis_file"
+echo '----------------------' >> "$analysis_file"
+strings -a $1 > "$strings_file"
+echo "Strings output stored in $strings_file" >> "$analysis_file"
+echo >> "$analysis_file"
