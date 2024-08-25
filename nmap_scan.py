@@ -3,25 +3,22 @@ import subprocess
 import sys
 from datetime import datetime
 
-def run_nmap_scan(targets, scan_type, output_file):
-    # Define Nmap command based on the scan type
-    if scan_type == "ping":
-        nmap_command = f"nmap -sn {targets} -oN {output_file}"
-    elif scan_type == "syn":
-        nmap_command = f"nmap -sS {targets} -oN {output_file}"
-    elif scan_type == "version":
-        nmap_command = f"nmap -sV {targets} -oN {output_file}"
-    elif scan_type == "script":
-        nmap_command = f"nmap -sC {targets} -oN {output_file}"
-    elif scan_type == "os":
-        nmap_command = f"nmap -O {targets} -oN {output_file}"
-    else:
-        raise ValueError("Invalid scan type selected.")
-
+def run_nmap_scan(targets, scan_type, custom_options, output_file):
+    # Construct the full Nmap command
+    nmap_command = f"nmap {custom_options} {targets} -oN {output_file}"
+    
+    # Print the command to the terminal with an extra line break
+    print(f"\nRunning the following Nmap command:\n")
+    print(nmap_command)
+    print("\n")  # Add an extra carriage return for clarity
+    
+    # Log the command at the top of the output file
+    with open(output_file, "w") as log_file:
+        log_file.write(f"# Nmap command run:\n# {nmap_command}\n\n")
+    
     # Execute the Nmap command
-    print(f"Running {scan_type} scan on {targets}...")
     subprocess.run(nmap_command, shell=True)
-    print(f"Scan complete. Results saved to {os.path.abspath(output_file)}")
+    print(f"\nScan complete. Results saved to {os.path.abspath(output_file)}")
 
 def get_user_input():
     # Prompt for IP address/range or file with targets
@@ -55,7 +52,45 @@ def get_user_input():
         print("Invalid choice! Please run the script again and select a valid scan type.")
         exit(1)
 
-    return targets, scan_type
+    # Prompt for additional Nmap options based on scan type
+    custom_options = ""
+    if scan_type == "ping":
+        exclude_hosts = input("Enter any hosts to exclude from the scan (comma-separated), or leave blank: ")
+        if exclude_hosts:
+            custom_options += f"--exclude {exclude_hosts} "
+    elif scan_type == "syn":
+        port_range = input("Enter the port range to scan (e.g., 1-65535), or leave blank for default: ")
+        timing = input("Enter the timing template (T0 to T5), or leave blank for default: ")
+        if port_range:
+            custom_options += f"-p {port_range} "
+        if timing:
+            custom_options += f"-{timing} "
+    elif scan_type == "version":
+        include_os = input("Include OS detection? (yes/no): ").lower()
+        if include_os == "yes":
+            custom_options += "-O "
+    elif scan_type == "script":
+        specific_scripts = input("Enter specific NSE scripts to run, or leave blank for default: ")
+        if specific_scripts:
+            custom_options += f"--script {specific_scripts} "
+    elif scan_type == "os":
+        include_version = input("Include service version detection? (yes/no): ").lower()
+        if include_version == "yes":
+            custom_options += "-sV "
+
+    # Ensure the basic scan type option is included
+    if scan_type == "ping":
+        custom_options += "-sn "
+    elif scan_type == "syn":
+        custom_options += "-sS "
+    elif scan_type == "version":
+        custom_options += "-sV "
+    elif scan_type == "script":
+        custom_options += "-sC "
+    elif scan_type == "os":
+        custom_options += "-O "
+
+    return targets, scan_type, custom_options
 
 def generate_output_filename(scan_type, targets):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -75,13 +110,13 @@ def main():
     print("Welcome to the Automated Nmap Scan Script")
     print("----------------------------------------")
     
-    targets, scan_type = get_user_input()
+    targets, scan_type, custom_options = get_user_input()
 
     # Generate dynamic output filename
     output_file = generate_output_filename(scan_type, targets)
 
     # Run the selected Nmap scan
-    run_nmap_scan(targets, scan_type, output_file)
+    run_nmap_scan(targets, scan_type, custom_options, output_file)
 
 if __name__ == "__main__":
     main()
