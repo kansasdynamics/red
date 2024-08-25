@@ -3,6 +3,25 @@ import subprocess
 import sys
 from datetime import datetime
 
+def list_nmap_scripts():
+    # The directory where NSE scripts are typically located
+    script_directory = "/usr/share/nmap/scripts/"
+    
+    # Check if the directory exists
+    if not os.path.exists(script_directory):
+        print(f"Nmap scripts directory not found: {script_directory}")
+        return []
+    
+    # List all scripts in the directory and sort them alphabetically
+    scripts = sorted([f for f in os.listdir(script_directory) if f.endswith('.nse')])
+    
+    # Display scripts to the user
+    print("\nAvailable Nmap Scripts (Alphabetized):")
+    for i, script in enumerate(scripts, 1):
+        print(f"{i}. {script}")
+    
+    return scripts
+
 def run_nmap_scan(targets, scan_type, custom_options, output_file):
     # Construct the full Nmap command
     nmap_command = f"nmap {custom_options} {targets} -oN {output_file}"
@@ -70,9 +89,14 @@ def get_user_input():
         if include_os == "yes":
             custom_options += "-O "
     elif scan_type == "script":
-        specific_scripts = input("Enter specific NSE scripts to run, or leave blank for default: ")
-        if specific_scripts:
-            custom_options += f"--script {specific_scripts} "
+        available_scripts = list_nmap_scripts()
+        if available_scripts:
+            script_choices = input("Enter the numbers of the scripts to run (comma-separated), or leave blank for default: ")
+            if script_choices:
+                # Strip spaces and process script choices
+                script_choices = script_choices.replace(" ", "")
+                selected_scripts = [available_scripts[int(choice) - 1] for choice in script_choices.split(",") if choice.isdigit() and 0 < int(choice) <= len(available_scripts)]
+                custom_options += f"--script {','.join(selected_scripts)} "
     elif scan_type == "os":
         include_version = input("Include service version detection? (yes/no): ").lower()
         if include_version == "yes":
