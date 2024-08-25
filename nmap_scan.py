@@ -5,21 +5,21 @@ from datetime import datetime
 
 def run_nmap_scan(targets, scan_type, output_file):
     # Define Nmap command based on the scan type
-    if scan_type == "ping_sweep":
+    if scan_type == "ping":
         nmap_command = f"nmap -sn {targets} -oN {output_file}"
-    elif scan_type == "syn_scan":
+    elif scan_type == "syn":
         nmap_command = f"nmap -sS {targets} -oN {output_file}"
-    elif scan_type == "version_detection":
+    elif scan_type == "version":
         nmap_command = f"nmap -sV {targets} -oN {output_file}"
-    elif scan_type == "script_scan":
+    elif scan_type == "script":
         nmap_command = f"nmap -sC {targets} -oN {output_file}"
-    elif scan_type == "os_detection":
+    elif scan_type == "os":
         nmap_command = f"nmap -O {targets} -oN {output_file}"
     else:
         raise ValueError("Invalid scan type selected.")
 
     # Execute the Nmap command
-    print(f"Running {scan_type} on {targets}...")
+    print(f"Running {scan_type} scan on {targets}...")
     subprocess.run(nmap_command, shell=True)
     print(f"Scan complete. Results saved to {os.path.abspath(output_file)}")
 
@@ -42,11 +42,11 @@ def get_user_input():
     scan_choice = input("Enter the number corresponding to the scan type: ")
 
     scan_types = {
-        "1": "ping_sweep",
-        "2": "syn_scan",
-        "3": "version_detection",
-        "4": "script_scan",
-        "5": "os_detection"
+        "1": "ping",
+        "2": "syn",
+        "3": "version",
+        "4": "script",
+        "5": "os"
     }
 
     scan_type = scan_types.get(scan_choice)
@@ -55,14 +55,13 @@ def get_user_input():
         print("Invalid choice! Please run the script again and select a valid scan type.")
         exit(1)
 
-    # Prompt for output file name
-    output_file = input("Enter the output file name (leave blank for default): ")
+    return targets, scan_type
 
-    if not output_file:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"nmap_scan_{timestamp}.txt"
-
-    return targets, scan_type, output_file
+def generate_output_filename(scan_type, targets):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    sanitized_targets = targets.replace("/", "_").replace(" ", "_")
+    output_file = f"nmap_scan_{scan_type}_{sanitized_targets}_{timestamp}.log"
+    return output_file
 
 def check_sudo():
     if os.geteuid() != 0:
@@ -76,7 +75,10 @@ def main():
     print("Welcome to the Automated Nmap Scan Script")
     print("----------------------------------------")
     
-    targets, scan_type, output_file = get_user_input()
+    targets, scan_type = get_user_input()
+
+    # Generate dynamic output filename
+    output_file = generate_output_filename(scan_type, targets)
 
     # Run the selected Nmap scan
     run_nmap_scan(targets, scan_type, output_file)
